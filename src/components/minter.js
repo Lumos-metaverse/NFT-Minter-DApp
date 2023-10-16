@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NFTStorage, File } from 'nft.storage';
 import { ethers } from 'ethers';
+import './NFTMinter.json';
 
 
 function NFTMinter() {
@@ -18,17 +19,10 @@ function NFTMinter() {
         setMessage('Uploading metadata to IPFS...');
 
         const metadata = await client.store({
-            description: description,
-            image: new File([file], 'nft.jpg', { type: 'image/jpeg' }),
             name: name,
-            attributes: [
-                { trait_type: "Rarity", value: "Common" }, // Just a placeholder; modify as needed
-                // Add more attributes here
-            ],
-            external_url: "" // We'll update this after minting the NFT.
+            description: description,
+            image: new File([file], 'nft.jpg', { type: 'image/jpeg' })
         });
-
-        console.log('NFT name is', name);
 
         if (!name || !description || !file) {
             setMessage("Please ensure all fields are filled out.");
@@ -42,7 +36,7 @@ function NFTMinter() {
 
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract('0x33DD4f52DE27e2B9787c690fC100326F1B5B006E', [
+        const contract = new ethers.Contract('0xB5cA1C3b8A0940a000382fa2ee2B05263fA8f6c9', [
             {
                 "inputs": [],
                 "stateMutability": "nonpayable",
@@ -554,7 +548,6 @@ function NFTMinter() {
             }
         ], signer);
 
-        console.log('NFT name is...see after', name);
         
         try {
             const tx = await contract.mintNFT(cid);
@@ -562,15 +555,9 @@ function NFTMinter() {
             const tokenID = await contract.getTokenID();
             setTokenID(Number(tokenID));
 
-
-        // Update the external_url with the tokenID after minting
-        // metadata.external_url = `https://testnets.opensea.io/assets/sepolia/0x84eeae4e9d8391135ffd56f46e7b9f3375feb196/${tokenID}`;
-        // await client.store(metadata);
-
             setMessage('NFT Minted Successfully!');
             setIsNFTMinted(true); 
         } catch (error) {
-            console.log(error)
             setMessage(`Error: ${error.message}`);
         }
     }
@@ -586,7 +573,7 @@ function NFTMinter() {
             <button onClick={mintNFT}>Mint NFT</button>
             <p>{message}</p>
             { isNFTMinted && tokenID !== null && ( <a
-            href={`https://testnets.opensea.io/assets/sepolia/0x33DD4f52DE27e2B9787c690fC100326F1B5B006E/${tokenID}`}
+            href={`https://testnets.opensea.io/assets/sepolia/0xB5cA1C3b8A0940a000382fa2ee2B05263fA8f6c9/${tokenID}`}
             target='_blank'
             rel='noopener noreferrer'
           >Click here to view on Opensea</a>) }
