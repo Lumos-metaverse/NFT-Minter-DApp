@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { NFTStorage, File } from 'nft.storage';
 import { ethers } from 'ethers';
-import './NFTMinter.json';
 
 
 function NFTMinter() {
