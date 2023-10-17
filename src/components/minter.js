@@ -35,6 +35,7 @@ function NFTMinter() {
 
         const provider = new ethers.providers.Web3Provider(window.ethereum)
 window.ethereum.enable()
+        await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner(); 
         const contract = new ethers.Contract('0xB5cA1C3b8A0940a000382fa2ee2B05263fA8f6c9', [
             {
