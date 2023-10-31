@@ -11,10 +11,27 @@ function NFTMinter() {
     const [isNFTMinted, setIsNFTMinted] = useState(false);
     const [tokenID, setTokenID] = useState(null);
 
+    const CHAIN_ID = 11155111;
+    const NETWORK_NAME = "Sepolia test network";
 
     const client = new NFTStorage({ token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDYyOEZBYkU2RThiMzk0ZEYzMjBGMjA5NDcyNTc0MTRmYWUxQjdjRTUiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY5NzIyMzg1MDk4MiwibmFtZSI6Ik5GVF9NaW50ZXIifQ.laCGbh8PzvJ0QfymAD_6SiZWsrgmARoR6xK1EbE36Dg" });
 
     const mintNFT = async () => {
+        if (!name || !description || !file) {
+            setMessage("Please ensure all fields are filled out.");
+            return;
+        }
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send('eth_requestAccounts', []);
+        const { chainId } = await provider.getNetwork();
+  
+        
+        if (chainId !== CHAIN_ID) {
+          window.alert(`Please switch to the ${NETWORK_NAME} network!`);
+          return;
+          }
+
         setMessage('Uploading metadata to IPFS...');
 
         const metadata = await client.store({
@@ -22,20 +39,12 @@ function NFTMinter() {
             description: description,
             image: new File([file], 'nft.jpg', { type: 'image/jpeg' })
         });
-
-        if (!name || !description || !file) {
-            setMessage("Please ensure all fields are filled out.");
-            return;
-        }
-        
-
-        const cid = metadata.url.replace('ipfs://', '');
+     
+        const cid = metadata.ipnft;
 
         setMessage(`Metadata uploaded with CID: ${cid}. Minting NFT...`);
 
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-window.ethereum.enable()
-        await provider.send('eth_requestAccounts', []);
+       
         const signer = provider.getSigner(); 
         const contract = new ethers.Contract('0xB5cA1C3b8A0940a000382fa2ee2B05263fA8f6c9', [
             {
